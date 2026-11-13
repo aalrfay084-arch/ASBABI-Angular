@@ -1,0 +1,369 @@
+:host {
+  display: block;
+  font-family: "Tahoma", sans-serif;
+  color: #26352f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.purchases-page {
+  background: #faf9f6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+
+.page-header {
+  background: #244c3c;
+  color: white;
+  padding: 18px 7%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.logo span:first-child {
+  font-size: 27px;
+}
+
+.back-btn {
+  color: white;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 10px 18px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.back-btn:hover {
+  background: white;
+  color: #244c3c;
+}
+
+/* Main Content */
+
+.purchases-content {
+  width: 86%;
+  max-width: 1200px;
+  margin: 45px auto;
+  flex: 1;
+}
+
+.page-title {
+  margin-bottom: 30px;
+}
+
+.page-title h1 {
+  color: #244c3c;
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+
+.page-title p {
+  color: #777;
+  font-size: 15px;
+}
+
+/* Purchases List */
+
+.purchases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.purchase-card {
+  background: white;
+  border: 1px solid #e9e5dc;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+  transition: 0.3s;
+}
+
+.purchase-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.07);
+}
+
+/* Book Info */
+
+.book-info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #eee;
+}
+
+.book-icon {
+  width: 65px;
+  height: 65px;
+  background: #f2eee5;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  flex-shrink: 0;
+}
+
+.book-info h2 {
+  color: #244c3c;
+  font-size: 19px;
+  margin: 0 0 9px;
+}
+
+.book-info p {
+  color: #777;
+  font-size: 13px;
+  margin: 5px 0;
+}
+
+/* Purchase Details */
+
+.purchase-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  padding: 24px 0;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.detail-item span {
+  color: #888;
+  font-size: 13px;
+}
+
+.detail-item strong {
+  color: #26352f;
+  font-size: 15px;
+}
+
+/* Card Footer */
+
+.card-footer {
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.status,
+.payment-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.status > span,
+.payment-status {
+  color: #777;
+}
+
+.status strong,
+.payment-status strong {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+/* Status Colors */
+
+.pending {
+  background: #fff3d9;
+  color: #a56a13;
+}
+
+.approved {
+  background: #e2f2e8;
+  color: #267344;
+}
+
+.rejected {
+  background: #fce5e5;
+  color: #b52d2d;
+}
+
+.completed {
+  background: #e1edff;
+  color: #285c9d;
+}
+
+.expired {
+  background: #eee8e2;
+  color: #795548;
+}
+
+/* Payment Colors */
+
+.paid {
+  background: #e2f2e8;
+  color: #267344;
+}
+
+.unpaid {
+  background: #fff3d9;
+  color: #a56a13;
+}
+
+/* Empty State */
+
+.empty-state {
+  background: white;
+  border: 1px solid #eee8dd;
+  border-radius: 15px;
+  padding: 55px 20px;
+  text-align: center;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+}
+
+.empty-icon {
+  font-size: 55px;
+}
+
+.empty-state h2 {
+  color: #244c3c;
+  margin: 18px 0 10px;
+  font-size: 21px;
+}
+
+.empty-state p {
+  color: #888;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.browse-btn {
+  display: inline-block;
+  background: #244c3c;
+  color: white;
+  text-decoration: none;
+  padding: 12px 25px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+
+.browse-btn:hover {
+  background: #2c674d;
+}
+
+/* Loading & Error */
+
+.message {
+  background: white;
+  padding: 25px;
+  text-align: center;
+  border-radius: 12px;
+  color: #244c3c;
+  margin-top: 20px;
+}
+
+.message.error {
+  color: #b52d2d;
+}
+
+.retry-btn {
+  display: block;
+  margin: 15px auto 0;
+  padding: 9px 20px;
+  background: #244c3c;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Footer */
+
+footer {
+  background: #203d32;
+  color: white;
+  text-align: center;
+  padding: 28px 15px;
+  margin-top: 40px;
+}
+
+footer p {
+  font-size: 17px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+footer span {
+  color: #c5d2ca;
+  font-size: 13px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+
+  .page-header {
+    padding: 15px 5%;
+  }
+
+  .purchases-content {
+    width: 92%;
+    margin: 30px auto;
+  }
+
+  .purchase-details {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .card-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+}
+
+@media (max-width: 480px) {
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .purchase-card {
+    padding: 18px;
+  }
+
+  .purchase-details {
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 12px;
+  }
+
+  .book-info h2 {
+    font-size: 16px;
+  }
+
+  .detail-item strong {
+    font-size: 13px;
+  }
+
+}

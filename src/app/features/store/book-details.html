@@ -1,0 +1,182 @@
+<div class="details-page" dir="rtl">
+
+  <header class="details-header">
+    <div class="logo">
+      <span class="logo-icon">📚</span>
+      <span>ASBABI</span>
+    </div>
+
+    <a routerLink="/" class="back-btn">
+      العودة إلى المكتبة
+    </a>
+  </header>
+
+  <main class="details-content">
+
+    @if (loading) {
+      <div class="message">
+        جاري تحميل بيانات الكتاب...
+      </div>
+    } @else if (errorMessage) {
+      <div class="message error">
+        {{ errorMessage }}
+      </div>
+    } @else if (book) {
+
+      <div class="book-details-card">
+
+        <div class="book-cover">
+          <img
+            src="https://placehold.co/300x400/f1e9dc/34495e?text=ASBABI"
+            alt="غلاف الكتاب"
+          />
+        </div>
+
+        <div class="book-information">
+
+          <span class="category">
+            {{ book.category?.name }}
+          </span>
+
+          <h1>{{ book.title }}</h1>
+
+          <p class="author">
+            ✍️ {{ book.author?.name }}
+          </p>
+
+          <div class="divider"></div>
+
+          <div class="info-row">
+            <span>التصنيف</span>
+            <strong>{{ book.category?.name }}</strong>
+          </div>
+
+          <div class="info-row">
+            <span>السعر</span>
+            <strong class="price">{{ book.price }} ريال</strong>
+          </div>
+
+          <div class="info-row">
+            <span>الكمية المتاحة</span>
+            <strong>{{ book.quantity }}</strong>
+          </div>
+
+          <div class="author-biography">
+            <h3>نبذة عن المؤلف</h3>
+            <p>{{ book.author?.biography || 'لا توجد نبذة متاحة عن المؤلف.' }}</p>
+          </div>
+
+          <!-- Borrowing Messages -->
+
+          @if (borrowingSuccess) {
+            <div class="success-message">
+              {{ borrowingSuccess }}
+            </div>
+          }
+
+          @if (borrowingError) {
+            <div class="error-message">
+              {{ borrowingError }}
+            </div>
+          }
+
+          <!-- Borrow Button -->
+
+          <button
+            type="button"
+            class="main-back-btn"
+            (click)="borrowBook()"
+            [disabled]="borrowingLoading || book.quantity <= 0">
+
+            @if (borrowingLoading) {
+              جارٍ إرسال طلب الاستعارة...
+            } @else if (book.quantity <= 0) {
+              الكتاب غير متوفر حاليًا
+            } @else {
+              استعارة الكتاب
+            }
+
+          </button>
+
+          <div class="divider"></div>
+
+          <!-- Purchase Messages -->
+
+          @if (purchaseSuccess) {
+            <div class="success-message">
+              {{ purchaseSuccess }}
+            </div>
+          }
+
+          @if (purchaseError) {
+            <div class="error-message">
+              {{ purchaseError }}
+            </div>
+          }
+
+          <!-- Purchase Quantity -->
+
+          <div class="purchase-section">
+
+            <h3>شراء الكتاب</h3>
+
+            <label for="purchaseQuantity">
+              الكمية المطلوبة:
+            </label>
+
+            <input
+              id="purchaseQuantity"
+              type="number"
+              min="1"
+              [max]="book.quantity"
+              [(ngModel)]="purchaseQuantity"
+              [disabled]="purchaseLoading || book.quantity <= 0"
+            />
+
+            <p>
+              الإجمالي:
+              <strong class="price">
+                {{ book.price * purchaseQuantity }} ريال
+              </strong>
+            </p>
+
+            <button
+              type="button"
+              class="main-back-btn"
+              (click)="buyBook()"
+              [disabled]="purchaseLoading || book.quantity <= 0">
+
+              @if (purchaseLoading) {
+                جارٍ إرسال طلب الشراء...
+              } @else if (book.quantity <= 0) {
+                الكتاب غير متوفر حاليًا
+              } @else {
+                شراء الكتاب
+              }
+
+            </button>
+
+          </div>
+
+          <a routerLink="/" class="main-back-btn">
+            العودة إلى المكتبة
+          </a>
+
+        </div>
+
+      </div>
+
+    } @else {
+      <div class="message">
+        لم يتم العثور على الكتاب.
+      </div>
+    }
+
+  </main>
+
+  <footer>
+    <p>ASBABI - مكتبتك الإلكترونية</p>
+    <span>اكتشف عالماً من المعرفة بين صفحات الكتب</span>
+  </footer>
+
+</div>

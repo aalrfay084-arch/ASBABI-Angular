@@ -1,0 +1,325 @@
+
+:host {
+  display: block;
+  font-family: "Tahoma", sans-serif;
+  color: #26352f;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.borrowings-page {
+  min-height: 100vh;
+  background: #faf9f6;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 7%;
+  background: white;
+  border-bottom: 1px solid #eee;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 25px;
+  font-weight: bold;
+  color: #244c3c;
+}
+
+.logo span:first-child {
+  font-size: 30px;
+}
+
+.back-btn {
+  text-decoration: none;
+  background: #f0eee8;
+  color: #244c3c;
+  padding: 11px 20px;
+  border-radius: 7px;
+  transition: 0.2s;
+}
+
+.back-btn:hover {
+  background: #e5e1d7;
+}
+
+/* Content */
+
+.borrowings-content {
+  width: 100%;
+  max-width: 1100px;
+  margin: 50px auto;
+  padding: 0 25px;
+  flex: 1;
+}
+
+.page-title {
+  margin-bottom: 35px;
+}
+
+.page-title h1 {
+  color: #244c3c;
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.page-title p {
+  color: #777;
+  line-height: 1.8;
+}
+
+/* Borrowing Cards */
+
+.borrowings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.borrowing-card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 25px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.03);
+}
+
+.book-info {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.book-icon {
+  width: 65px;
+  height: 65px;
+  background: #f3f0e9;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.book-info h2 {
+  color: #244c3c;
+  font-size: 21px;
+  margin: 0 0 10px;
+}
+
+.book-info p {
+  color: #888;
+  font-size: 13px;
+  margin: 5px 0;
+}
+
+/* Details */
+
+.borrowing-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 22px 0;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.detail-item span {
+  color: #888;
+  font-size: 13px;
+}
+
+.detail-item strong {
+  color: #26352f;
+  font-size: 14px;
+}
+
+/* Status */
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+}
+
+.status,
+.payment-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.status > span,
+.payment-status {
+  color: #777;
+}
+
+.status strong {
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.pending {
+  color: #9a6a16;
+  background: #fff5dc;
+}
+
+.approved {
+  color: #246b3d;
+  background: #eaf5ed;
+}
+
+.rejected,
+.cancelled {
+  color: #b33b3b;
+  background: #fff0f0;
+}
+
+.returned {
+  color: #286b8b;
+  background: #eaf5fa;
+}
+
+.overdue {
+  color: #b33b3b;
+  background: #ffe3e3;
+}
+
+.payment-status strong {
+  color: #244c3c;
+}
+
+/* Empty State */
+
+.empty-state {
+  text-align: center;
+  background: white;
+  padding: 65px 20px;
+  border-radius: 15px;
+  border: 1px solid #eee;
+}
+
+.empty-icon {
+  font-size: 55px;
+}
+
+.empty-state h2 {
+  color: #244c3c;
+  margin: 20px 0 10px;
+}
+
+.empty-state p {
+  color: #888;
+  line-height: 1.8;
+}
+
+.browse-btn,
+.retry-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 25px;
+  background: #244c3c;
+  color: white;
+  border: none;
+  border-radius: 7px;
+  text-decoration: none;
+  font-family: "Tahoma", sans-serif;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.browse-btn:hover,
+.retry-btn:hover {
+  background: #2c674d;
+}
+
+/* Messages */
+
+.message {
+  text-align: center;
+  padding: 60px 20px;
+  color: #244c3c;
+  font-size: 17px;
+}
+
+.error {
+  color: #b33b3b;
+}
+
+/* Footer */
+
+footer {
+  background: #203d32;
+  color: white;
+  text-align: center;
+  padding: 30px 15px;
+  line-height: 2;
+}
+
+footer span {
+  color: #c7d0ca;
+  font-size: 13px;
+}
+
+/* Responsive */
+
+@media (max-width: 700px) {
+  .borrowing-details {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .card-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .borrowings-content {
+    margin: 30px auto;
+  }
+}
+
+@media (max-width: 450px) {
+  .page-header {
+    padding: 18px 5%;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .logo {
+    font-size: 21px;
+  }
+
+  .borrowing-card {
+    padding: 18px;
+  }
+
+  .book-info h2 {
+    font-size: 17px;
+  }
+
+  .borrowing-details {
+    gap: 18px 10px;
+  }
+}

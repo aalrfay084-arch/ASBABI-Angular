@@ -1,0 +1,927 @@
+
+<div class="admin-page" dir="rtl">
+
+  <header class="admin-header">
+    <div>
+      <h1>📚 ASBABI | لوحة الإدارة</h1>
+      <p>إدارة المكتبة الإلكترونية</p>
+    </div>
+
+    <div class="admin-info">
+      <span>
+        {{ role === 'SuperAdmin' ? 'السوبر أدمن' : 'الأدمن' }}
+      </span>
+      <button (click)="logout()">تسجيل الخروج</button>
+    </div>
+  </header>
+
+  <main class="admin-content">
+
+    <section class="welcome">
+      <h2>مرحباً بك في لوحة الإدارة</h2>
+      <p>يمكنك إدارة جميع عمليات المكتبة من هذه الصفحة.</p>
+    </section>
+
+    <section class="admin-sections">
+
+      <button class="section-card" (click)="openSection('books')">
+        📚 <span>إدارة الكتب</span>
+      </button>
+
+      <button class="section-card" (click)="openSection('borrowings')">
+        📖 <span>إدارة الاستعارات</span>
+      </button>
+
+      <button class="section-card" (click)="openSection('purchases')">
+        🛒 <span>إدارة المشتريات</span>
+      </button>
+
+      <button class="section-card" (click)="openSection('users')">
+        👥 <span>إدارة المستخدمين</span>
+      </button>
+
+      <button class="section-card" (click)="openSection('authors')">
+        ✍️ <span>إدارة المؤلفين</span>
+      </button>
+
+      <button class="section-card" (click)="openSection('categories')">
+        🏷️ <span>إدارة التصنيفات</span>
+      </button>
+
+      @if (role === 'SuperAdmin') {
+        <button class="section-card" (click)="openSection('admins')">
+          🔐 <span>إدارة المسؤولين</span>
+        </button>
+      }
+
+    </section>
+
+    @if (activeSection === '') {
+      <section class="admin-placeholder">
+        <h3>مرحباً بك في نظام ASBABI</h3>
+        <p>اختر أحد أقسام الإدارة للبدء.</p>
+      </section>
+    }
+
+    
+@if (activeSection === 'books') {
+  <section class="books-management">
+
+    <div class="management-header">
+      <div>
+        <h2>📚 إدارة الكتب</h2>
+        <p>عرض وإضافة وتعديل وحذف الكتب</p>
+      </div>
+
+      <button class="add-book-btn" (click)="openAddBookForm()">
+        + إضافة كتاب
+      </button>
+    </div>
+
+    @if (message) {
+      <div class="success-message">{{ message }}</div>
+    }
+
+    @if (errorMessage) {
+      <div class="error-message">{{ errorMessage }}</div>
+    }
+
+    @if (loadingBooks) {
+      <p class="loading-message">جاري تحميل الكتب...</p>
+    } @else {
+      <div class="table-container">
+        <table class="books-table">
+          <thead>
+            <tr>
+              <th>رقم</th>
+              <th>عنوان الكتاب</th>
+              <th>المؤلف</th>
+              <th>التصنيف</th>
+              <th>السعر</th>
+              <th>الكمية</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (book of books; track book.bookId) {
+              <tr>
+                <td>{{ book.bookId }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author?.name || 'غير محدد' }}</td>
+                <td>{{ book.category?.name || 'غير محدد' }}</td>
+                <td>{{ book.price }}</td>
+                <td>{{ book.quantity }}</td>
+                <td>
+                  <div class="table-actions">
+                    <button
+                      class="edit-btn"
+                      (click)="openEditBookForm(book)">
+                      تعديل
+                    </button>
+
+                    <button
+                      class="delete-btn"
+                      (click)="deleteBook(book.bookId)">
+                      حذف
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="7" class="empty-message">
+                  لا توجد كتب حالياً.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (showBookForm) {
+      <div class="form-overlay">
+        <div class="book-form">
+
+          <h3>
+            {{ isEditMode ? 'تعديل بيانات الكتاب' : 'إضافة كتاب جديد' }}
+          </h3>
+
+          <form (ngSubmit)="saveBook()">
+
+            <label>عنوان الكتاب</label>
+            <input
+              type="text"
+              name="title"
+              [(ngModel)]="bookForm.title"
+              required
+              maxlength="200">
+
+            <label>السعر</label>
+            <input
+              type="number"
+              name="price"
+              [(ngModel)]="bookForm.price"
+              min="0"
+              max="10000"
+              required>
+
+            <label>الكمية</label>
+            <input
+              type="number"
+              name="quantity"
+              [(ngModel)]="bookForm.quantity"
+              min="0"
+              max="100"
+              required>
+
+            <label>المؤلف</label>
+            <select
+              name="authorId"
+              [(ngModel)]="bookForm.authorId"
+              required>
+              <option [ngValue]="0" disabled>اختر المؤلف</option>
+              @for (author of authors; track author.authorId) {
+                <option [ngValue]="author.authorId">
+                  {{ author.name }}
+                </option>
+              }
+            </select>
+
+            <label>التصنيف</label>
+            <select
+              name="categoryId"
+              [(ngModel)]="bookForm.categoryId"
+              required>
+              <option [ngValue]="0" disabled>اختر التصنيف</option>
+              @for (category of categories; track category.categoryId) {
+                <option [ngValue]="category.categoryId">
+                  {{ category.name }}
+                </option>
+              }
+            </select>
+
+            @if (errorMessage) {
+              <div class="error-message">{{ errorMessage }}</div>
+            }
+
+            <div class="form-actions">
+              <button type="submit" class="save-btn">
+                {{ isEditMode ? 'حفظ التعديلات' : 'إضافة الكتاب' }}
+              </button>
+
+              <button
+                type="button"
+                class="cancel-btn"
+                (click)="closeBookForm()">
+                إلغاء
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    }
+
+  </section>
+}
+
+
+    
+@if (activeSection === 'borrowings') {
+  <section class="books-management">
+
+    <div class="management-header">
+      <div>
+        <h2>📖 إدارة الاستعارات</h2>
+        <p>متابعة طلبات الاستعارة والموافقة عليها وتسجيل الإرجاع.</p>
+      </div>
+    </div>
+
+    @if (borrowingMessage) {
+      <div class="success-message">{{ borrowingMessage }}</div>
+    }
+
+    @if (borrowingErrorMessage) {
+      <div class="error-message">{{ borrowingErrorMessage }}</div>
+    }
+
+    @if (loadingBorrowings) {
+      <p class="loading-message">جاري تحميل طلبات الاستعارة...</p>
+    } @else {
+      <div class="table-container">
+        <table class="books-table">
+          <thead>
+            <tr>
+              <th>رقم الطلب</th>
+              <th>رقم المستخدم</th>
+              <th>الكتاب</th>
+              <th>تاريخ الطلب</th>
+              <th>تاريخ الاستعارة</th>
+              <th>تاريخ الإرجاع</th>
+              <th>رسوم الاستعارة</th>
+              <th>الغرامة</th>
+              <th>حالة الطلب</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (borrowing of borrowings; track borrowing.borrowingId) {
+              <tr>
+                <td>{{ borrowing.borrowingId }}</td>
+                <td>{{ borrowing.userId }}</td>
+                <td>{{ borrowing.book?.title || 'غير محدد' }}</td>
+                <td>{{ borrowing.requestDate | date:'yyyy/MM/dd' }}</td>
+                <td>
+                  {{ borrowing.borrowDate ? (borrowing.borrowDate | date:'yyyy/MM/dd') : '—' }}
+                </td>
+                <td>
+                  {{ borrowing.returnDate ? (borrowing.returnDate | date:'yyyy/MM/dd') : '—' }}
+                </td>
+                <td>{{ borrowing.borrowingFee }} ريال</td>
+                <td>{{ borrowing.lateFee }} ريال</td>
+                <td>
+                  @switch (borrowing.status) {
+                    @case ('Pending') { قيد الانتظار }
+                    @case ('Approved') { تمت الموافقة }
+                    @case ('Rejected') { مرفوض }
+                    @case ('Returned') { تم الإرجاع }
+                    @case ('Cancelled') { ملغي }
+                    @case ('Overdue') { متأخر }
+                    @default { {{ borrowing.status }} }
+                  }
+
+                  @if (borrowing.lateFee > 0) {
+                    <div>
+                      {{ borrowing.isLateFeePaid ? 'الغرامة مدفوعة' : 'الغرامة غير مدفوعة' }}
+                    </div>
+                  }
+                </td>
+                <td>
+                  <div class="table-actions">
+
+                    @if (borrowing.status === 'Pending') {
+                      <button
+                        class="edit-btn"
+                        (click)="updateBorrowingStatus(borrowing.borrowingId, 'Approved')">
+                        موافقة
+                      </button>
+
+                      <button
+                        class="delete-btn"
+                        (click)="updateBorrowingStatus(borrowing.borrowingId, 'Rejected')">
+                        رفض
+                      </button>
+                    }
+
+                    @if (borrowing.status === 'Approved' || borrowing.status === 'Overdue') {
+                      <button
+                        class="edit-btn"
+                        (click)="updateBorrowingStatus(borrowing.borrowingId, 'Returned')">
+                        تسجيل الإرجاع
+                      </button>
+                    }
+
+                    @if (
+                      borrowing.status === 'Returned' &&
+                      borrowing.lateFee > 0 &&
+                      !borrowing.isLateFeePaid
+                    ) {
+                      <button
+                        class="edit-btn"
+                        (click)="payLateFee(borrowing.borrowingId)">
+                        تأكيد دفع الغرامة
+                      </button>
+                    }
+
+                    @if (borrowing.status !== 'Approved' && borrowing.status !== 'Overdue') {
+                      <button
+                        class="delete-btn"
+                        (click)="deleteBorrowing(borrowing.borrowingId)">
+                        حذف
+                      </button>
+                    }
+
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="10" class="empty-message">
+                  لا توجد طلبات استعارة حالياً.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  </section>
+}
+
+
+    @if (activeSection === 'purchases') {
+  <section class="books-management">
+
+    <div class="management-header">
+      <div>
+        <h2>🛒 إدارة المشتريات</h2>
+        <p>متابعة طلبات الشراء والموافقة عليها وإكمال عمليات البيع.</p>
+      </div>
+    </div>
+
+    @if (purchaseMessage) {
+      <div class="success-message">{{ purchaseMessage }}</div>
+    }
+
+    @if (purchaseErrorMessage) {
+      <div class="error-message">{{ purchaseErrorMessage }}</div>
+    }
+
+    @if (loadingPurchases) {
+      <p class="loading-message">جاري تحميل طلبات الشراء...</p>
+    } @else {
+      <div class="table-container">
+        <table class="books-table">
+          <thead>
+            <tr>
+              <th>رقم الطلب</th>
+              <th>اسم المستخدم</th>
+              <th>الكتاب</th>
+              <th>الكمية</th>
+              <th>سعر الوحدة</th>
+              <th>الإجمالي</th>
+              <th>تاريخ الطلب</th>
+              <th>مهلة الاستلام</th>
+              <th>حالة الطلب</th>
+              <th>حالة الدفع</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (purchase of purchases; track purchase.purchaseId) {
+              <tr>
+                <td>{{ purchase.purchaseId }}</td>
+                <td>{{ purchase.userName }}</td>
+                <td>{{ purchase.book?.title || 'غير محدد' }}</td>
+                <td>{{ purchase.quantity }}</td>
+                <td>{{ purchase.unitPrice }} ريال</td>
+                <td>{{ purchase.totalAmount }} ريال</td>
+
+                <td>
+                  {{ purchase.purchaseDate | date:'yyyy/MM/dd' }}
+                </td>
+
+                <td>
+                  {{ purchase.expiryDate
+                    ? (purchase.expiryDate | date:'yyyy/MM/dd')
+                    : '—' }}
+                </td>
+
+                <td>
+                  @switch (purchase.status) {
+                    @case ('Pending') { قيد الانتظار }
+                    @case ('Approved') { تمت الموافقة }
+                    @case ('Rejected') { مرفوض }
+                    @case ('Completed') { مكتمل }
+                    @case ('Expired') { منتهي }
+                    @default { {{ purchase.status }} }
+                  }
+                </td>
+
+                <td>
+                  {{ purchase.paymentStatus === 'Paid' ? 'مدفوع' : 'غير مدفوع' }}
+                </td>
+
+                <td>
+                  <div class="table-actions">
+
+                    @if (purchase.status === 'Pending') {
+                      <button
+                        class="edit-btn"
+                        (click)="updatePurchaseStatus(purchase.purchaseId, 'Approved')">
+                        موافقة
+                      </button>
+
+                      <button
+                        class="delete-btn"
+                        (click)="updatePurchaseStatus(purchase.purchaseId, 'Rejected')">
+                        رفض
+                      </button>
+                    }
+
+                    @if (purchase.status === 'Approved') {
+                      <button
+                        class="edit-btn"
+                        (click)="updatePurchaseStatus(purchase.purchaseId, 'Completed')">
+                        إكمال الطلب
+                      </button>
+                    }
+
+                    @if (
+                      purchase.status !== 'Approved' &&
+                      purchase.status !== 'Completed'
+                    ) {
+                      <button
+                        class="delete-btn"
+                        (click)="deletePurchase(purchase.purchaseId)">
+                        حذف
+                      </button>
+                    }
+
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="11" class="empty-message">
+                  لا توجد طلبات شراء حالياً.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  </section>
+}
+
+    @if (activeSection === 'users') {
+  <section class="books-management">
+
+    <div class="management-header">
+      <div>
+        <h2>👥 إدارة المستخدمين</h2>
+        <p>عرض حسابات المستخدمين وإدارة الوصول إليها.</p>
+      </div>
+    </div>
+
+    @if (userMessage) {
+      <p class="success-message">{{ userMessage }}</p>
+    }
+
+    @if (userErrorMessage) {
+      <p class="error-message">{{ userErrorMessage }}</p>
+    }
+
+    @if (loadingUsers) {
+      <p>جاري تحميل المستخدمين...</p>
+    }
+
+    @if (!loadingUsers) {
+      <div class="table-container">
+        <table class="books-table">
+          <thead>
+            <tr>
+              <th>الاسم الكامل</th>
+              <th>البريد الإلكتروني</th>
+              <th>اسم المستخدم</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (user of users; track user.id) {
+              <tr>
+                <td>{{ user.fullName }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.userName }}</td>
+                <td>
+                  <div class="table-actions">
+                    <button
+                      class="delete-btn"
+                      (click)="deleteUser(user.id)">
+                      حذف
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+            @if (users.length === 0) {
+              <tr>
+                <td colspan="4">لا يوجد مستخدمون حاليًا.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+  </section>
+}
+
+    
+@if (activeSection === 'authors') {
+  <section class="books-management">
+
+    <div class="management-header">
+      <div>
+        <h2>✍️ إدارة المؤلفين</h2>
+        <p>عرض وإضافة وتعديل وحذف المؤلفين</p>
+      </div>
+
+      <button class="add-book-btn" (click)="openAddAuthorForm()">
+        + إضافة مؤلف
+      </button>
+    </div>
+
+    @if (authorMessage) {
+      <div class="success-message">{{ authorMessage }}</div>
+    }
+
+    @if (authorErrorMessage) {
+      <div class="error-message">{{ authorErrorMessage }}</div>
+    }
+
+    @if (loadingAuthors) {
+      <p class="loading-message">جاري تحميل المؤلفين...</p>
+    } @else {
+      <div class="table-container">
+        <table class="books-table">
+          <thead>
+            <tr>
+              <th>رقم</th>
+              <th>اسم المؤلف</th>
+              <th>نبذة عن المؤلف</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (author of authors; track author.authorId) {
+              <tr>
+                <td>{{ author.authorId }}</td>
+                <td>{{ author.name }}</td>
+                <td>{{ author.biography || 'لا توجد نبذة' }}</td>
+                <td>
+                  <div class="table-actions">
+                    <button
+                      class="edit-btn"
+                      (click)="openEditAuthorForm(author)">
+                      تعديل
+                    </button>
+
+                    <button
+                      class="delete-btn"
+                      (click)="deleteAuthor(author.authorId)">
+                      حذف
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="empty-message">
+                  لا يوجد مؤلفون حالياً.
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (showAuthorForm) {
+      <div class="form-overlay">
+        <div class="book-form">
+
+          <h3>
+            {{ isEditAuthorMode ? 'تعديل بيانات المؤلف' : 'إضافة مؤلف جديد' }}
+          </h3>
+
+          <form (ngSubmit)="saveAuthor()">
+
+            <label>اسم المؤلف</label>
+            <input
+              type="text"
+              name="authorName"
+              [(ngModel)]="authorForm.name"
+              required
+              maxlength="100">
+
+            <label>نبذة عن المؤلف</label>
+            <textarea
+              name="authorBiography"
+              [(ngModel)]="authorForm.biography"
+              maxlength="1000"
+              rows="5"
+              placeholder="اكتب نبذة مختصرة عن المؤلف...">
+            </textarea>
+
+            @if (authorErrorMessage) {
+              <div class="error-message">
+                {{ authorErrorMessage }}
+              </div>
+            }
+
+            <div class="form-actions">
+              <button type="submit" class="save-btn">
+                {{ isEditAuthorMode ? 'حفظ التعديلات' : 'إضافة المؤلف' }}
+              </button>
+
+              <button
+                type="button"
+                class="cancel-btn"
+                (click)="closeAuthorForm()">
+                إلغاء
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    }
+
+  </section>
+}
+
+
+    @if (activeSection === 'categories') {
+  <section class="books-management">
+
+    <div class="management-header">
+      <div>
+        <h2>🏷️ إدارة التصنيفات</h2>
+        <p>إضافة وتعديل وحذف تصنيفات الكتب.</p>
+      </div>
+
+      <button class="add-book-btn" (click)="openAddCategoryForm()">
+        + إضافة تصنيف
+      </button>
+    </div>
+
+    @if (categoryMessage) {
+      <div class="success-message">{{ categoryMessage }}</div>
+    }
+
+    @if (categoryErrorMessage) {
+      <div class="error-message">{{ categoryErrorMessage }}</div>
+    }
+
+    <div class="table-container">
+      <table class="books-table">
+        <thead>
+          <tr>
+            <th>الرقم</th>
+            <th>اسم التصنيف</th>
+            <th>الوصف</th>
+            <th>الإجراءات</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          @if (loadingCategories) {
+            <tr>
+              <td colspan="4" class="loading-message">
+                جاري تحميل التصنيفات...
+              </td>
+            </tr>
+          } @else {
+            @for (category of categories; track category.categoryId) {
+              <tr>
+                <td>{{ category.categoryId }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description || '—' }}</td>
+                <td>
+                  <div class="table-actions">
+                    <button
+                      class="edit-btn"
+                      (click)="openEditCategoryForm(category)">
+                      تعديل
+                    </button>
+
+                    <button
+                      class="delete-btn"
+                      (click)="deleteCategory(category.categoryId)">
+                      حذف
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4" class="empty-message">
+                  لا توجد تصنيفات حالياً.
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  @if (showCategoryForm) {
+    <div class="form-overlay">
+      <div class="book-form">
+
+        <h3>
+          {{ isEditCategoryMode ? 'تعديل التصنيف' : 'إضافة تصنيف جديد' }}
+        </h3>
+
+        <form (ngSubmit)="saveCategory()">
+
+          <label>اسم التصنيف</label>
+          <input
+            type="text"
+            name="name"
+            [(ngModel)]="categoryForm.name"
+            maxlength="100"
+            required>
+
+          <label>الوصف</label>
+          <textarea
+            name="description"
+            [(ngModel)]="categoryForm.description"
+            maxlength="500"
+            rows="4">
+          </textarea>
+
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              {{ isEditCategoryMode ? 'حفظ التعديلات' : 'إضافة التصنيف' }}
+            </button>
+
+            <button
+              type="button"
+              class="cancel-btn"
+              (click)="closeCategoryForm()">
+              إلغاء
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  }
+}
+
+    @if (activeSection === 'admins' && role === 'SuperAdmin') {
+  <section class="books-management">
+
+    <div class="management-header">
+      <div>
+        <h2>🔐 إدارة المسؤولين</h2>
+        <p>إضافة المسؤولين ومتابعة حساباتهم.</p>
+      </div>
+
+      <button class="add-btn" (click)="openAddAdminForm()">
+        + إضافة مسؤول
+      </button>
+    </div>
+
+    @if (adminMessage) {
+      <p class="success-message">{{ adminMessage }}</p>
+    }
+
+    @if (adminErrorMessage) {
+      <p class="error-message">{{ adminErrorMessage }}</p>
+    }
+
+    @if (loadingAdmins) {
+      <p>جاري تحميل المسؤولين...</p>
+    }
+
+    @if (!loadingAdmins) {
+      <div class="table-container">
+        <table class="books-table">
+          <thead>
+            <tr>
+              <th>الاسم الكامل</th>
+              <th>البريد الإلكتروني</th>
+              <th>اسم المستخدم</th>
+              <th>الإجراءات</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            @for (admin of admins; track admin.id) {
+              <tr>
+                <td>{{ admin.fullName }}</td>
+                <td>{{ admin.email }}</td>
+                <td>{{ admin.userName }}</td>
+                <td>
+                  <div class="table-actions">
+                    <button
+                      class="delete-btn"
+                      (click)="deleteAdmin(admin.id)">
+                      حذف
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+
+            @if (admins.length === 0) {
+              <tr>
+                <td colspan="4">لا يوجد مسؤولون حاليًا.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    @if (showAdminForm) {
+      <div class="form-overlay">
+        <div class="book-form">
+
+          <h3>إضافة مسؤول جديد</h3>
+
+          <form (ngSubmit)="createAdmin()">
+
+            <label>الاسم الكامل</label>
+            <input
+              type="text"
+              name="fullName"
+              [(ngModel)]="adminForm.fullName"
+              required
+            />
+
+            <label>البريد الإلكتروني</label>
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="adminForm.email"
+              required
+            />
+
+            <label>كلمة المرور</label>
+            <input
+              type="password"
+              name="password"
+              [(ngModel)]="adminForm.password"
+              minlength="6"
+              required
+            />
+
+            <div class="form-actions">
+              <button type="submit" class="save-btn">
+                إنشاء المسؤول
+              </button>
+
+              <button
+                type="button"
+                class="cancel-btn"
+                (click)="closeAdminForm()">
+                إلغاء
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+    }
+
+  </section>
+}
+
+  </main>
+</div>

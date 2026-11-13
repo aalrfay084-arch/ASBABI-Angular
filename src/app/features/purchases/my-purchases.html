@@ -1,0 +1,164 @@
+<div class="purchases-page" dir="rtl">
+
+  <header class="page-header">
+    <div class="logo">
+      <span>📚</span>
+      <span>ASBABI</span>
+    </div>
+
+    <a routerLink="/" class="back-btn">
+      العودة إلى المكتبة
+    </a>
+  </header>
+
+  <main class="purchases-content">
+
+    <div class="page-title">
+      <h1>مشترياتي</h1>
+      <p>تابع طلبات شراء الكتب وحالة الدفع والاستلام</p>
+    </div>
+
+    @if (loading) {
+      <div class="message">
+        جاري تحميل طلبات الشراء...
+      </div>
+    }
+    @else if (errorMessage) {
+      <div class="message error">
+        {{ errorMessage }}
+
+        <button class="retry-btn" (click)="loadPurchases()">
+          إعادة المحاولة
+        </button>
+      </div>
+    }
+    @else if (purchases.length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">🛍️</span>
+
+        <h2>لا توجد طلبات شراء حتى الآن</h2>
+
+        <p>
+          يمكنك تصفح المكتبة واختيار الكتب التي ترغب في شرائها.
+        </p>
+
+        <a routerLink="/" class="browse-btn">
+          تصفح الكتب
+        </a>
+      </div>
+    }
+    @else {
+      <div class="purchases-list">
+
+        @for (purchase of purchases; track purchase.purchaseId) {
+
+          <div class="purchase-card">
+
+            <div class="book-info">
+
+              <div class="book-icon">📚</div>
+
+              <div>
+                <h2>
+                  {{ purchase.book?.title || 'كتاب رقم ' + purchase.bookId }}
+                </h2>
+
+                <p>رقم الطلب: #{{ purchase.purchaseId }}</p>
+
+                @if (purchase.book?.author?.name) {
+                  <p>المؤلف: {{ purchase.book?.author?.name }}</p>
+                }
+              </div>
+
+            </div>
+
+            <div class="purchase-details">
+
+              <div class="detail-item">
+                <span>تاريخ الطلب</span>
+                <strong>
+                  {{ purchase.purchaseDate | date:'yyyy/MM/dd' }}
+                </strong>
+              </div>
+
+              <div class="detail-item">
+                <span>الكمية</span>
+                <strong>{{ purchase.quantity }}</strong>
+              </div>
+
+              <div class="detail-item">
+                <span>سعر النسخة</span>
+                <strong>{{ purchase.unitPrice }} ريال</strong>
+              </div>
+
+              <div class="detail-item">
+                <span>الإجمالي</span>
+                <strong>{{ purchase.totalAmount }} ريال</strong>
+              </div>
+
+              <div class="detail-item">
+                <span>تاريخ الموافقة</span>
+                <strong>
+                  {{ purchase.approvalDate
+                    ? (purchase.approvalDate | date:'yyyy/MM/dd')
+                    : 'لم تتم الموافقة بعد' }}
+                </strong>
+              </div>
+
+              <div class="detail-item">
+                <span>آخر موعد للاستلام</span>
+                <strong>
+                  {{ purchase.expiryDate
+                    ? (purchase.expiryDate | date:'yyyy/MM/dd')
+                    : 'لم يحدد بعد' }}
+                </strong>
+              </div>
+
+            </div>
+
+            <div class="card-footer">
+
+              <div class="status">
+                <span>حالة الطلب:</span>
+
+                <strong
+                  [class.pending]="purchase.status.toLowerCase() === 'pending'"
+                  [class.approved]="purchase.status.toLowerCase() === 'approved'"
+                  [class.rejected]="purchase.status.toLowerCase() === 'rejected'"
+                  [class.completed]="purchase.status.toLowerCase() === 'completed'"
+                  [class.expired]="purchase.status.toLowerCase() === 'expired'">
+
+                  {{ getStatusText(purchase.status) }}
+
+                </strong>
+              </div>
+
+              <div class="payment-status">
+                <span>حالة الدفع:</span>
+
+                <strong
+                  [class.paid]="purchase.paymentStatus.toLowerCase() === 'paid'"
+                  [class.unpaid]="purchase.paymentStatus.toLowerCase() === 'unpaid'">
+
+                  {{ getPaymentStatusText(purchase.paymentStatus) }}
+
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+    }
+
+  </main>
+
+  <footer>
+    <p>ASBABI - مكتبتك الإلكترونية</p>
+    <span>اكتشف عالماً من المعرفة بين صفحات الكتب</span>
+  </footer>
+
+</div>

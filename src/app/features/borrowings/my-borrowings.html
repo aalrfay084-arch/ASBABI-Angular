@@ -1,0 +1,167 @@
+
+<div class="borrowings-page" dir="rtl">
+
+  <header class="page-header">
+    <div class="logo">
+      <span>📚</span>
+      <span>ASBABI</span>
+    </div>
+
+    <a routerLink="/" class="back-btn">
+      العودة إلى المكتبة
+    </a>
+  </header>
+
+  <main class="borrowings-content">
+
+    <div class="page-title">
+      <h1>استعاراتي</h1>
+      <p>تابع طلبات استعارة الكتب وحالتها</p>
+    </div>
+
+    @if (loading) {
+
+      <div class="message">
+        جاري تحميل طلبات الاستعارة...
+      </div>
+
+    } @else if (errorMessage) {
+
+      <div class="message error">
+        {{ errorMessage }}
+
+        <button class="retry-btn" (click)="loadBorrowings()">
+          إعادة المحاولة
+        </button>
+      </div>
+
+    } @else if (borrowings.length === 0) {
+
+      <div class="empty-state">
+        <span class="empty-icon">📖</span>
+        <h2>لا توجد طلبات استعارة حتى الآن</h2>
+        <p>يمكنك تصفح المكتبة واختيار الكتب التي ترغب في استعارتها.</p>
+
+        <a routerLink="/" class="browse-btn">
+          تصفح الكتب
+        </a>
+      </div>
+
+    } @else {
+
+      <div class="borrowings-list">
+
+        @for (borrowing of borrowings; track borrowing.borrowingId) {
+
+          <div class="borrowing-card">
+
+            <div class="book-info">
+
+              <div class="book-icon">
+                📚
+              </div>
+
+              <div>
+                <h2>
+                  {{ borrowing.book?.title || 'كتاب رقم ' + borrowing.bookId }}
+                </h2>
+
+                <p>
+                  رقم الطلب: #{{ borrowing.borrowingId }}
+                </p>
+
+                @if (borrowing.book?.author?.name) {
+                  <p>
+                    المؤلف: {{ borrowing.book?.author?.name }}
+                  </p>
+                }
+
+              </div>
+
+            </div>
+
+            <div class="borrowing-details">
+
+              <div class="detail-item">
+                <span>تاريخ الطلب</span>
+                <strong>
+                  {{ borrowing.requestDate | date:'yyyy/MM/dd' }}
+                </strong>
+              </div>
+
+              <div class="detail-item">
+                <span>تاريخ الاستعارة</span>
+                <strong>
+                  {{ borrowing.borrowDate
+                    ? (borrowing.borrowDate | date:'yyyy/MM/dd')
+                    : 'لم يحدد بعد' }}
+                </strong>
+              </div>
+
+              <div class="detail-item">
+                <span>موعد الإعادة</span>
+                <strong>
+                  {{ borrowing.dueDate
+                    ? (borrowing.dueDate | date:'yyyy/MM/dd')
+                    : 'لم يحدد بعد' }}
+                </strong>
+              </div>
+
+              <div class="detail-item">
+                <span>رسوم الاستعارة</span>
+                <strong>{{ borrowing.borrowingFee }} ريال</strong>
+              </div>
+
+              <div class="detail-item">
+                <span>الغرامة</span>
+                <strong>{{ borrowing.lateFee }} ريال</strong>
+              </div>
+
+            </div>
+
+            <div class="card-footer">
+
+              <div class="status">
+                <span>حالة الطلب:</span>
+
+                <strong
+                  [class.pending]="borrowing.status.toLowerCase() === 'pending'"
+                  [class.approved]="borrowing.status.toLowerCase() === 'approved'"
+                  [class.rejected]="borrowing.status.toLowerCase() === 'rejected'"
+                  [class.returned]="borrowing.status.toLowerCase() === 'returned'"
+                  [class.overdue]="borrowing.status.toLowerCase() === 'overdue'"
+                  [class.cancelled]="borrowing.status.toLowerCase() === 'cancelled'">
+
+                  {{ getStatusText(borrowing.status) }}
+
+                </strong>
+              </div>
+
+              <div class="payment-status">
+                حالة الغرامة:
+
+                <strong>
+                  {{ borrowing.lateFee > 0
+                    ? (borrowing.isLateFeePaid ? 'مدفوعة' : 'غير مدفوعة')
+                    : 'لا توجد غرامة' }}
+                </strong>
+              </div>
+
+            </div>
+
+          </div>
+
+        }
+
+      </div>
+
+    }
+
+  </main>
+
+  <footer>
+    <p>ASBABI - مكتبتك الإلكترونية</p>
+    <span>اكتشف عالماً من المعرفة بين صفحات الكتب</span>
+  </footer>
+
+</div>
